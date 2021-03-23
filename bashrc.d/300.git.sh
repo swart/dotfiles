@@ -22,10 +22,11 @@ alias gds="git diff --stat"
 alias gcr="git clone --recursive"
 alias gb="cd \$(git rev-parse --show-toplevel)"
 alias gr="git remote -v"
+alias gfl='git log --follow -p --'
 
 gn()
 {
-  if [ $# -eq 1 ]; then
+  if [[ $# -eq 1 ]]; then
     git checkout -b "$1"
     git push --set-upstream origin "$1"
   else
@@ -35,16 +36,17 @@ gn()
 
 gt()
 {
-  if [ $# -eq 1 ]; then
+  if [[ $# -eq 1 ]]; then
     git tag -a "v$1" -m "Creating tag $1"
   else
-    echo "I only accept one argument"
+    echo "Latest tags"
+    git tag | tail
   fi
 }
 
 bundle()
 {
-  if ! [ -d .git ]; then
+  if ! [[ -d .git ]]; then
     echo "This is not git repo or it's not the root"
     return
   fi
@@ -55,11 +57,11 @@ bundle()
 
 unbundle()
 {
-  if [ -z "$1" ]; then
+  if [[ -z "$1" ]]; then
     echo "Need name"
     return
   fi
-  if [ ! -f "$1" ]; then
+  if [[ ! -f "$1" ]]; then
     echo "File not exist"
     return
   fi

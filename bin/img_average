@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+convert "$1" -fill black -colorize 100 tmp.miff
+
+k=1
+for img in "$@"; do
+  pct=`convert xc: -format "%[fx:100/($k)]" info:`
+  echo "$img: pct=$pct"
+  convert tmp.miff $img -compose blend -set option:compose:args $pct -composite tmp.miff
+  k=$((k+1))
+done
+convert tmp.miff -format jpg average.jpg
+rm -f tmp.miff

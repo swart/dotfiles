@@ -1,10 +1,5 @@
-syntax on                              " Enable the syntax highlighting
-filetype plugin indent on              " Allow indenting, and file type detection
-
 let mapleader=","                      " Change the leader character to a ,
 
-"set modelines=0                       " I cannot remember
-set nocompatible                       " Disable the vi backwars compatibility
 set number                             " Enables the line numbering
 set tabstop=2                          " Sets the tabstop to 4 characters
 set shiftwidth=2                       " Allows for backspace of 4 characters
@@ -13,43 +8,46 @@ set expandtab                          " Change tab to space
 set smarttab                           " more tabbing
 set autoindent                         " enable auto indenting
 set cindent                            " enable indeting in a c-style
-"set mouse=a                            " Allow mouse support
 set encoding=utf-8                     " Set the filetype encoding to utf-8
 set noshowmode                         " Switch off the showing of the Mode
 set ignorecase                         " Make search case insensitive
 set hidden                             " Allows switching of buffers without saving
 set ttyfast                            " Sets rendering mode to be faster (slow on slow line)
-set backspace=indent,eol,start         " What we backspace over?
 set cursorline                         " Highlights the current line
-"set title                              " Changes the terminal title
 set smartcase                          " Allows case sensitive search if first letter is Uppercase
-set incsearch                          " Searches while typing
 set hlsearch                           " Cannot remember
 set noswapfile                         " Disables the swap file
 set nobackup                           " Disables the backup file
 set nofoldenable                       " Switches off code folding
-"set relativenumber                     " Enables relative numbering for ease of copy
 set gdefault                           " Enables find/replace for all by default
 set ff=unix                            " Default line endings
 set fileformats=unix,dos               " File formats allowed
-"set backupdir=~/.vim/backup//          " Where must the backups be
-"set directory=~/.vim/swap//            " Where must the swap directory be
-"set undodir=~/.vim/undo//              " Where must the undo directory be
-set guifont="Hack:12"                   " What font should we try use
 set laststatus=2                        " When must the status line be displayed
 set list                               " Show the invisible characters
-set listchars=tab:→→,trail:°           " What should the invisibles be shown as
-"set listchars=tab:→→,eol:¬,trail:°     " What should the invisibles be shown as
 set ruler                              " Enable the sizing at the bottom
-colorscheme molokai                    " What should the colorscheme be
 set showcmd                            " show last used command
 set lazyredraw                         " speed up the redraw behaviour
 set showmatch                          " Highlight matching bracket
+set path+=**                           " search sub directories for files
+set wildmenu                           " enable file menu for multi options
+set timeoutlen=0               " make esc behave instantly
+set colorcolumn=80,120
+
+" Enable folding
+nnoremap <space> za
+
+" turn hybrid line numbers on
+:set number relativenumber
+:set nu rnu
+
+" File browser Settings
+let g:netrw_banner=0                   " Disable banner
+let g:netrw_altv=1                     " open splits to the right
+let g:netrw_liststyle=3                " tree view
+
+set pastetoggle=<F2>
 
 " Setup some keymaps
-
-" Switch the paste toggle
-set pastetoggle=<F4>
 
 " Make level 1 heading
 nnoremap <leader>1 yypVr=
@@ -68,68 +66,12 @@ nnoremap <Down> gj
 nnoremap qq :q<cr>
 nnoremap qa :qa<cr>
 
-" Allow both ways of quiting
-nnoremap ; :
-
 " Clear Whitespace
 nnoremap <leader>W :%s/\s\+$//<cr>:let @/=''<CR>
 
 " Specify the file type
-autocmd BufRead,BufNewFile *.md set filetype=md
+autocmd BufRead,BufNewFile *.md set filetype=markdown
 au BufNewFile,BufRead *.json set filetype=json
-
-set background=dark
-hi User1 ctermfg=Black ctermbg=DarkGray
-hi User2 ctermfg=Cyan ctermbg=Black
-hi User3 ctermfg=Red ctermbg=Black
-hi User4 ctermfg=Blue ctermbg=Black
-hi User5 ctermfg=Green ctermbg=Black
-hi User6 ctermfg=White ctermbg=Black
-
-function! SetColour()
-    if &modified == 1
-        hi User1 ctermfg=Black ctermbg=Red
-    else
-        hi User1 ctermfg=White ctermbg=DarkGray
-    endif
-endfunction
-
-" Write out the mode
-function! GetMode()
-    if mode() == "i"
-        return "❰INSERT❱"
-    endif
-    if mode() == "n"
-        return "❰NORMAL❱"
-    endif
-    if mode() == "R"
-        return "❰REPLACE❱"
-    endif
-    if mode() == "v"
-        return "❰VISUAL❱"
-    endif
-    if mode() == "V"
-        return "❰V-LINE❱"
-    endif
-    if mode() == ""
-        return "❰V-BLCK❱"
-    endif
-
-    return mode()
-endfunction
-
-" Change status line colours
-set statusline=%1*%{GetMode()}%*\ %-(%m%t%)%=%2*%y%*\ %3*%c,%l%*\ %p%%  " What should the status line be
-
-" Colour Events
-au InsertEnter  * hi User1 ctermfg=Black ctermbg=Green
-au InsertLeave  * call SetColour()
-au BufWritePost  * call SetColour()
-
-autocmd BufWritePre *.scala :%s/\s\+$//e
-autocmd FileType python setlocal tabstop=2
-autocmd FileType python setlocal shiftwidth=2
-autocmd FileType python setlocal softtabstop=2
 
 " Make the exit of insert mode faster
 set timeoutlen=1000 ttimeoutlen=0
@@ -138,3 +80,56 @@ set timeoutlen=1000 ttimeoutlen=0
 set completeopt=menuone,longest
 set magic
 set autoread
+
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+call plug#begin('~/.vim/plugged')
+Plug 'tpope/vim-sensible'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'itchyny/lightline.vim'
+Plug 'terryma/vim-multiple-cursors'
+Plug 'scrooloose/nerdtree'
+Plug 'tomasr/molokai'
+Plug 'jiangmiao/auto-pairs'
+Plug 'frazrepo/vim-rainbow'
+Plug 'mileszs/ack.vim'
+Plug 'dense-analysis/ale'
+Plug 'dikiaap/minimalist'
+Plug 'tpope/vim-markdown'
+Plug 'davidhalter/jedi-vim'
+call plug#end()
+
+
+set foldmethod=indent
+set foldlevel=99
+
+set t_Co=256
+let python_highlight_all=1
+syntax on
+colorscheme minimalist
+"colorscheme molokai
+
+map <C-p> :Files<CR>
+map <C-o> :NERDTreeToggle<CR>
+if executable('ag')
+  let g:ackprg = 'ag --vimgrep'
+endif
+
+let g:ale_fixers = {'*': ['trim_whitespace']}
+let g:ale_fix_on_save = 1
+let g:ale_linters = {
+\   'python': ['mypy', 'pylint', 'pycodestyle', 'pyflakes'],
+\}
+
+let g:SimpylFold_docstring_preview=1
+
+au BufNewFile,BufRead *.py set tabstop=4
+au BufNewFile,BufRead *.py set softtabstop=4
+au BufNewFile,BufRead *.py set shiftwidth=4
+"set mouse=
+"set ttymouse=

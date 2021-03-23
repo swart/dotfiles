@@ -77,16 +77,6 @@ line()
   printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 }
 
-pip3_install()
-{
-  pip3 install --user --upgrade -r ~/dotfiles/requirements-main.txt
-}
-
-pip3_install_extra()
-{
-  pip3 install --user --upgrade -r ~/dotfiles/requirements-extra.txt
-}
-
 last_monday()
 {
   date -d'last week last monday' +%Y-%m-%d
@@ -186,3 +176,71 @@ do_we_have_internet()
     sleep 5
   done
 }
+
+mirror()
+{
+  wget \
+    --mirror \
+    --recursive \
+    --convert-links \
+    --adjust-extension \
+    --span-hosts \
+    --page-requisites \
+    --no-parent \
+    --quiet \
+    --show-progress \
+    "$1"
+}
+
+fib()
+{
+  n=$1
+  if [[ $n -lt 2 ]]; then
+    echo $n
+    return
+  fi
+  a=0
+  b=1
+  c=$((a+b))
+  for (( i = 1; i < n; i++ )); do
+    c=$((a+b))
+    a=$b
+    b=$c
+  done
+  echo $c
+}
+
+scratch()
+{
+  if [ ! -f ~/scratch.md ]; then
+    touch ~/scratch.md
+  fi
+
+  vim ~/scratch.md
+}
+
+ex()
+{
+  if [ -f $1  ]; then
+    case $1 in
+      *.tar.bz2) tar xjf $1 ;;
+      *.tar.gz) tar xzf $1 ;;
+      *.bz2) bunzip2 $1 ;;
+      *.rar) unrar x $1 ;;
+      *.gz) gunzip $1 ;;
+      *.tar) tar xf $1 ;;
+      *.tbz2) tar xjf $1 ;;
+      *.tgz) tar xzf $1 ;;
+      *.zip) unzip $1 ;;
+      *.Z) uncompress $1 ;;
+      *.7z) 7z x $1 ;;
+      *.deb) ar x $1 ;;
+      *.tar.xz) tar xf $1 ;;
+      *.tar.zst) unzstd $1 ;;
+      *) echo "'$1' cannot be extracted via ex()" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+}
+
